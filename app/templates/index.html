@@ -17,10 +17,6 @@
     </div>
     {% endfor %}
     <h1 class="text-center">Welcome to My Blog.</h1>
-    <div class="post">
-        <p>{{quote}}</p>
-        <p id="name">"{{quote_author}}"</p>
-    </div>
     <br>
     <h2 class="text-center"><u><strong><i>Categories</i></strong></u></h2>
     <br>
@@ -66,8 +62,16 @@
             </a>
         </div>
     </div>
+
+      <div class="panel-footer" style="text-align: center">
+          <p>Random Quote of the Day</p>
+          {% for quote in quotes %}
+          <p>{{quote.quote}}</p>
+          <p>{{quote.author}}</p>
+          {% endfor %}
+      </div>
 </div>
-</div>
+
 
 
 
