@@ -1,0 +1,15 @@
+<!-- Displaying reviews macro -->
+{% macro displayComments(comments_list) %}
+<!-- {% for comment in comments_list %} -->
+  <div class="row">
+
+      <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
+        <p>{{comment.user.username}}</p>
+        <p>{{comment.pitch_comment}}</p>
+      </div>
+      </div>
+
+
+
+<!-- {% endfor %} -->
+{% endmacro %}

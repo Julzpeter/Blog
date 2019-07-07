@@ -1,0 +1,32 @@
+.welcome-page {
+    padding: 0;
+    margin: 0;
+    background-size: cover; 
+}
+.welcome {
+    text-align: center;
+    padding-top: 15rem;
+    padding-bottom: 22rem;
+}
+.welcome h1 {
+    font-family: 'Bilbo Swash Caps';
+    font-size: 150px;
+    color: white;
+}
+
+.welcome h2 {
+    font-family: 'Cinzel';
+    font-size: 30px;
+    color: white;
+}
+h3{
+    color: white;
+}
+.welcome a {
+    font-family: 'Mukta';
+    width: 140px;
+}
+
+.welcome a:hover {
+    color: white;
+}
