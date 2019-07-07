@@ -8,28 +8,12 @@ import markdown2
 
 
 # Views
-@main.route('/', methods = ['GET','POST'])
+@main.route("/", methods=["GET", "POST"])
 def index():
+    categories = ["FASHION & BEAUTY", "ART",
+                  "CAREER & FINANCE", "MOTHERHOOD", "GAMING", "MUSIC"]
+    return render_template('index.html', categories=categories, quotes=random_quote)
 
-    '''
-    View root page function that returns the index page and its data
-    '''
-    title = 'Pitch| Home'
-    pitches = Pitch.query.all()
-
-    form = PostPitchForm()
-    if form.validate_on_submit():
-        pitch_category = form.pitch_category.data
-        pitch = form.text.data
-
-        #Updated post
-        new_pitch = Pitch(pitch_category=pitch_category,text=pitch,user=current_user)
-
-        #save pitch method
-        new_pitch.save_pitch()
-        return  redirect(url_for('main.index'))
-
-    return render_template('index.html', title=title, pitch_form=form,pitches=pitches)
 
 
 
