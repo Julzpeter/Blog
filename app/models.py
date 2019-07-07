@@ -70,15 +70,15 @@ class Pitch(UserMixin,db.Model):
             if Pitch.user_id == User.id:
                     return User.username
 
-    @classmethod
-    def count_pitch(cls,username):
-        user = User.query.filter_by(username=uname).first()
-        pitch = Pitch.query.filter_by(user_id=user.id).all()
+#     @classmethod
+#     def count_pitch(cls,username):
+#         user = User.query.filter_by(username=uname).first()
+#         pitch = Pitch.query.filter_by(user_id=user.id).all()
 
-        pitch_count= 0
-        for pitch in pitch:
-            pitch_count +=1
-        return pitch_count
+#         pitch_count= 0
+#         for pitch in pitch:
+#             pitch_count +=1
+#         return pitch_count
 
 class Comment(db.Model):
         __tablename__ = 'comments'

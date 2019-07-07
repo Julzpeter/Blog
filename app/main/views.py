@@ -14,7 +14,7 @@ def index():
     '''
     View root page function that returns the index page and its data
     '''
-    title = 'Pitch| Home'
+    title = 'Blog| Home'
     pitches = Pitch.query.all()
 
     form = PostPitchForm()
@@ -33,13 +33,8 @@ def index():
     return render_template('index.html', title=title, pitch_form=form, pitches=pitches)
 
 @main.route("/pitches/<category>")
-def pitches_category(category):
+def pitch_category(category):
     title = f'My Blog --{category.upper()}'
-    # if category == "all":
-    #     pitches = Pitch.query.order_by(Pitch.time.desc())
-    # else:
-    #     pitches = Pitch.query.filter_by(
-    #         # pitch_category=pitches_category).all()
     return render_template("/pitch.html", title=title)
 
 
@@ -71,7 +66,7 @@ def new_pitch(uname):
                      
         
 
-        return redirect(url_for('main.pitches_category', category=pitch_category))
+        return redirect(url_for('main.pitch_category', category=pitch_category))
 
     return render_template('new_pitch.html', title=title_page, form=form)
 
