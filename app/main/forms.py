@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,SubmitField,SelectField
-from wtforms.validators import Required
+from wtforms.validators import Required,Length,DataRequired
 
 class ReviewForm(FlaskForm):
 
@@ -15,9 +15,14 @@ class UpdateProfile(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    category = SelectField('Select the category', choices=[('FASHION & BEAUTY', 'FASHION & BEAUTY'), ('CAREER & FINANCE', 'CAREER AND FINANCE'), ('GAMING', 'GAMING'), ('ART', 'ART')])
-    text = TextAreaField('Type your pitch')
-    submit = SubmitField('Post')
+    CATEGORIES = [('FASHION & BEAUTY', 'FASHION & BEAUTY'), ('ART', 'ART'), ('CAREER & FINANCE',
+                                                                             'CAREER & FINANCE'), ('MOTHERHOOD', 'MOTHERHOOD'), ('GAMING', 'GAMING'), ('MUSIC', 'MUSIC')]
+    category = SelectField("CATEGORIES", choices=CATEGORIES)
+    title = StringField("TITLE", validators=[DataRequired()])
+    post = TextAreaField("BLOG", validators=[Required()])
+    submit = SubmitField('Publish Now')
+  
+  
 
 
 class PostCommentForm(FlaskForm):
