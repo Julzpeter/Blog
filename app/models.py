@@ -76,7 +76,7 @@ class Pitch(UserMixin,db.Model):
         pitch = Pitch.query.filter_by(user_id=user.id).all()
 
         pitch_count= 0
-        for pitch in pitches:
+        for pitch in pitch:
             pitch_count +=1
         return pitch_count
 

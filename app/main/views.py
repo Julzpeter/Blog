@@ -32,8 +32,8 @@ def index():
 
     return render_template('index.html', title=title, pitch_form=form, pitches=pitches)
 
-@main.route("/blog/<string:category>")
-def pitch(category):
+@main.route("/pitches/<category>")
+def pitches_category(category):
     title = f'My Blog --{category.upper()}'
     if category == "all":
         pitches = Pitch.query.order_by(Pitch.time.desc())
@@ -43,58 +43,79 @@ def pitch(category):
     return render_template("/pitch.html", title=title,pitches = pitches)
 
 
-@main.route("/post", methods=["GET", "POST"])
+@main.route('/<uname>/new/pitch', methods=['GET', 'POST'])
 @login_required
-def add():
-    post_form = PostForm()
-    if post_form.validate_on_submit():
-        post = Post(title=post_form.title.data, text=post_form.post.data,
-                    category=post_form.category.data, user_id=current_user.id, username=current_user.username)
+def new_pitch(uname):
+    form = PostPitchForm()
 
-        post.save_post()
-        return redirect(url_for("main.index"))
-    return render_template('./post.html', post_form=post_form)
+    user = User.query.filter_by(username=uname).first()
 
+    if user is None:
+        abort(404)
 
-@main.route("/delete/<int:id>", methods=["GET", "POST"])
-@login_required
-def delete(id):
-    deleted = Post.query.filter_by(id=id).first()
-    db.session.delete(deleted)
-    db.session.commit()
-    return redirect(url_for('main.index'))
-
-@main.route("/commentDelete/<int:id>",methods=["GET","POST"])
-@login_required
-def delete_comment(id):
-    deleted_comment = Comment.query.filter_by(id=id).first()
-    db.session.delete(deleted_comment)
-    db.session.commit()
-    return redirect (url_for('main.index'))
-  
-
-
-@main.route('/comment/new/<int:post_id>', methods=['GET', 'POST'])
-@login_required
-def new_comment(post_id):
-    form = CommentForm()
-    post = Post.query.filter_by(id=post_id).first()
+    title_page = "My Blog -- Add New Post"
 
     if form.validate_on_submit():
+
+        title = form.title.data
+        content = form.content.data
+        category = form.category.data
+        date = datetime.datetime.now()
+        time = str(date.time())
+        time = time[0:5]
+        date = str(date)
+        date = date[0:10]
+        pitch = Pitch(title=title,
+                      content=content,
+                      category=category,
+                      user=current_user,
+                      date=date,
+                      time=time)
+
+        db.session.add(pitch)
+        db.session.commit()
+
+        return redirect(url_for('main.pitches_category', category=category))
+
+    return render_template('new_pitch.html', title=title_page, form=form)
+
+
+@main.route("/<uname>/pitch/<pitch_id>/new/comment", methods=["GET", "POST"])
+@login_required
+def new_comment(uname, pitch_id):
+    user = User.query.filter_by(username=uname).first()
+    pitch = Pitch.query.filter_by(id=pitch_id).first()
+
+    form = PostCommentForm()
+    title_page = "My Blog -- Comment Blog"
+
+    if form.validate_on_submit():
+        title = form.title.data
         comment = form.comment.data
+        date = datetime.datetime.now()
+        time = str(date.time())
+        time = time[0:5]
+        date = str(date)
+        date = date[0:10]
+        new_comment = Comment(post_comment=comment, user=user,
+                              pitch=pitch, time=time, date=date)
 
-        # Updated comment instance
-        new_comment = Comment(text=comment,user_id=current_user.id, post_id=post_id)
-
-        # save review method
         db.session.add(new_comment)
         db.session.commit()
-        
-       
-    all_comments = Comment.query.filter_by(post_id=post_id).all()
-    
-    return render_template('comment.html',form=form, comments=all_comments, post=post)
 
+        return redirect(url_for("main.display_comments", pitch_id=pitch.id))
+    return render_template("new_comment.html", title=title_page, form=form, pitch=pitch)
+
+
+@main.route("/<pitch_id>/comments")
+@login_required
+def display_comments(pitch_id):
+    # user = User.query.filter_by(username = current_user).first()
+    pitch = Pitch.query.filter_by(id=pitch_id).first()
+    title = "My Blog -- Comments"
+    comments = Comment.get_comments(pitch_id)
+
+    return render_template("display_comments.html", comments=comments, pitch=pitch, title=title)
 
 
 @main.route('/user/<uname>')
