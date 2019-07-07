@@ -1,6 +1,6 @@
 from flask import render_template,request,redirect,url_for,abort
 from . import main
-from .forms import ReviewForm, UpdateProfile,PostPitchForm,PostCommentForm
+from .forms import ReviewForm, UpdateProfile,PostForm,PostCommentForm
 from ..models import  User, Pitch,Comment
 from flask_login import login_required,current_user
 from .. import db,photos
