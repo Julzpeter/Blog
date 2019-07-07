@@ -1,120 +1,75 @@
-{% extends 'base.html'%}
-{% import 'bootstrap/wtf.html' as wtf%}
-{% block styles %}
-    {{super()}}
-    <link rel = "stylesheet" href = "{{url_for('static',filename='css/styles.css')}}">
+{% extends "base.html" %}
 
-    <link rel = "stylesheet" href = "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity = "sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin = "anonymous">
-    <script src = "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity = "sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin = "anonymous" > </script>
+{% block styles%}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/styles.css')}}">
+<link
+    href="https://fonts.googleapis.com/css?family=Courgette|Gloria+Hallelujah|Indie+Flower|Permanent+Marker|Varela+Round"
+    rel="stylesheet">
+{% endblock%}
 
-{{simplemde.css}}
-{{simplemde.js}}
-{% endblock %}
-# <!-- Content block - ->
-
-# <meta charset = "utf-8">
-#     {% if title %}
-#     <title > {{title}} < /title>
-#     {% else %}
-#     <title>Pitch</title>
-#     {% endif %}
 {% block content %}
-
-<div class = "container">
-    <h1 class = "text-center" > Welcome </h1>
-    <h2 class = "text-center" > One Minute Pitch </h2>
-
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10"><br><br>
-            {% if current_user.is_authenticated %}
-            <h3 style="text-align: center;">Write a new Pitch</h3>
-            {{wtf.quick_form(pitch_form)}}
-            {% else %}
-            <h4 styles="text-align:center;">PLEASE SIGN UP AN ACCOUNT TO ALSO POST A PITCH </h4>
-            {% endif %}
-        </div>
-        <div class="col-md-1"></div>
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
     </div>
-    <div style="margin:30px;border:1px solid black;border-radius:5px;"></div>
+    {% endfor %}
+    <h1 class="text-center">Welcome to My Blog.</h1>
+    <div class="post">
+        <p>{{quote}}</p>
+        <p id="name">"{{quote_author}}"</p>
+    </div>
+    <br>
+    <h2 class="text-center"><u><strong><i>Categories</i></strong></u></h2>
+    <br>
+    <hr>
+    <br>
+    <div class="center">
+        <div class="row categories">
+            <a href="{{url_for('main.pitches_category',category='Fashion Blog')}}">
+                <div class="category col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <span>Fashion Blogs</span>
+                </div>
+            </a>
+            <a href="{{url_for('main.pitches_category',category='Food Blog')}}">
+                <div class="category col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <span>Food Blogs</span>
+                </div>
+            </a>
+
+
+            <a href="{{url_for('main.pitches_category',category='Travel Blog')}}">
+                <div class="category col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <span>Travel Blogs</span>
+                </div>
+            </a>
+        </div>
+        <div class="row categories">
+            <a href="{{url_for('main.pitches_category',category='Music Blog')}}">
+                <div class="category col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <span>Music Blogs</span>
+                </div>
+            </a>
+
+
+            <a href="{{url_for('main.pitches_category',category='Sports Blog')}}">
+                <div class="category col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <span>Sports Blogs</span>
+                </div>
+            </a>
+            <a href="{{url_for('main.pitches_category',category='All Blogs')}}">
+                <div class="category col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <span>All Blogs</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
 </div>
 
-    <div class = "row" >
-        <div class = "col-md-1" > </div >
-        <div class = "col-md-10" >
-            <hr >
-            <h3 class = "text-center" style = "color:white;background-color: black;padding:10px;border-radius: 5px;"> Choose the category you like </h3>
-            <br >
-            <br >
-            <br >
-            <div class = "row" >
-                <div class = "col-md-6" >
-                    <button
-                        style = "color:white;background-color: black;margin-bottom:10px;width:100%;text-align: center" >
-                        ⚙ General </button>
-                    <div class = "row card">
-                    <div class = 'container-fluid text-center'>
-                        {% for pitch in pitches %}
-                        {% if pitch.category == 'General' %}
-                        <div class = "co">
-                            <a href = "/pitches/{{pitch.id}}">{{pitch.category}}</a>
-                            {% endif %}
-                            <p class = "card-body">{{pitch.text}}</p>
-                            <small class = "card-footer">Posted on {{pitch.posted_at}}</small>
-                            <a href="/pitches/{{pitch.id}}">Go to Pitch</a>
-                            <hr>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class = "col-md-6">
-                    <button
-                        style = "color:white;background-color: black;margin-bottom:10px;width:100%;text-align: center">
-                        ⚙ Educative </button>
-                    <div class = "row card">
-                    <div class = "container-fluid text-center">
-                        {% for pitch in pitches %}
-                        {% if pitch.category == 'Educative' %}
-                        <div class = "co">
-                            <a href = "/pitches/{{pitch.id}}">{{pitch.category}}</a>
-                            {% endif %}
-                            <p class = "card-body"> {{pitch.text}} </p>
-                            <small class = "card-footer"> Posted on{{pitch.posted_at}}</small>
-                            <a href="/pitches/{{pitch.id}}">Go to Pitch</a>
-                            <hr>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-                <div class = "col-md-6">
-                    <button
-                        style = "color:white;background-color: black;margin-bottom:10px;width:100%;text-align: center" >
-                        ⚙ Religion </button>
-                    <div class = "row card">
-                    <div class = "container-fluid text-center">
-                        {% for pitch in pitches %}
-                        {% if pitch.category == 'Religion' %}
-                        <div class = "co">
-                          <a href = "/pitches/{{pitch.id}}">{{pitch.category}} </a>
-                        </div >
-                        {% endif %}
-                        <p class = "card-body"> {{pitch.text}} </p>
-                        <small class = "card-footer" > Posted on {{pitch.posted_at}} </h6>
-                          <a href="/pitches/{{pitch.id}}">Go to Pitch</a>
-                        <hr>
-                        {% endfor %}
-                    </div>
-                </div>
-
-
-    </div>
-    </div>
 
 
 
-
-
-{% endblock %}
+{% endblock % }
