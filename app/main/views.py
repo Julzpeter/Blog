@@ -35,12 +35,12 @@ def index():
 @main.route("/pitches/<category>")
 def pitches_category(category):
     title = f'My Blog --{category.upper()}'
-    if category == "all":
-        pitches = Pitch.query.order_by(Pitch.time.desc())
-    else:
-        pitches = Pitch.query.filter_by(
-            category=category).order_by(Pitch.time.desc()).all()
-    return render_template("/pitch.html", title=title,pitches = pitches)
+    # if category == "all":
+    #     pitches = Pitch.query.order_by(Pitch.time.desc())
+    # else:
+    #     pitches = Pitch.query.filter_by(
+    #         # pitch_category=pitches_category).all()
+    return render_template("/pitch.html", title=title)
 
 
 @main.route('/<uname>/new/pitch', methods=['GET', 'POST'])
@@ -57,25 +57,21 @@ def new_pitch(uname):
 
     if form.validate_on_submit():
 
-        title = form.title.data
-        content = form.content.data
-        category = form.category.data
-        date = datetime.datetime.now()
-        time = str(date.time())
-        time = time[0:5]
-        date = str(date)
-        date = date[0:10]
-        pitch = Pitch(title=title,
-                      content=content,
-                      category=category,
-                      user=current_user,
-                      date=date,
-                      time=time)
-
+        # title = form.title.data
+        text= form.text.data
+        pitch_category = form.pitch_category.data
+        pitch = Pitch(
+                      text=text,
+                      pitch_category=pitch_category,
+                      user=current_user)
         db.session.add(pitch)
         db.session.commit()
+                      
 
-        return redirect(url_for('main.pitches_category', category=category))
+                     
+        
+
+        return redirect(url_for('main.pitches_category', category=pitch_category))
 
     return render_template('new_pitch.html', title=title_page, form=form)
 

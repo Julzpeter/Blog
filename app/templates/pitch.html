@@ -1,57 +1,47 @@
-{% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
-{% import 'macros.html' as macro %}
-{% block content %}
+{% extends "base.html" %}
 
-{% block styles %}
+{% block styles%}
 {{ super() }}
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-{% endblock %}
+<link rel="stylesheet" href="{{url_for('static',filename='css/styles.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='css/pitches.css')}}">
+{% endblock%}
 
+{% block content %}
 <div class="container">
-<div class='pitch' style="border:1px solid grey;border-left:3px solid black;padding:10px;border-radius:5px;">
-
-<h4>{{pitch.category}}</h4>
-<p>{{pitch.text}}</p><br>
-  <span>
-    <a href="/pitches/{{pitch.id}}?like=1"><i class="fas fa-thumbs-up"></i></a>
-    {{pitch.likes}}
-    <a href="/pitches/{{pitch.id}}?dislike=1"><i class="fas fa-thumbs-down"></i></a>
-    {{pitch.dislikes}}
-  </span>
-<br>
-</br>
-<p>Date: {{pitch.posted_at}}</p>
-</div><br><br>
-
-<h3 style="text-align:center;">Comments</h3>
-{% for comment in all_comments %}
-
-<p style='border:1px solid grey;border-radius:4px;padding:10px;'>
-    ﹅<strong>{{comment.pitch_comment}}</strong><br>posted at {{ comment.posted.strftime('%Y-%m-%d') }}
-</p>
-{%endfor%}
-<div class="row">
-  <p>{{pitch.text}}</p>
-
-
-
-
-
-
-<br>
-<div class="container">
-<div class="comments" style="border:1px solid grey;border-left:3px solid black;padding:10px;border-radius:5px;" >
-        <hr>
-        {% if current_user.is_authenticated %}
-        {{ wtf.quick_form(comment_form)}}
-        {% endif %}
-        <h3>Comments</h3>
-        {{macro.displayComments(comments)}}
-
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+  </div>
+  {% endfor %}
+  <h1 style="text-align:center">{{title}}</h1>
+  {% if pitches %}
+  <!-- {% for row in pitches | batch(2) %} -->
+  <div class="row ">
+    {% for pitch in pitches %}
+    <div class="col-md-5">
+      <h3>{{pitch.title | upper}}</h3>
+      <p>Posted by <strong>{{pitch.user.username}}</strong></p>
+      <p>Date: <strong>{{pitch.date}}</strong> at <strong>{{pitch.time}}</strong></p>
+      <p>"{{pitch.content}}"</p>
+      <p>CATEGORY: <strong>{{pitch.category | upper}}</strong></p>
+      <div>
+        <div>
+          {% if current_user.is_authenticated %}
+          <a href="{{url_for('main.display_comments',pitch_id = pitch.id)}}">View Comments</a>
+          {% endif %}
         </div>
-
-<br>
-
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <h2>There are no blogs in this category</h2>
+  {% if current_user.is_authenticated %}
+  <a href="{{url_for('main.new_pitch',uname = current_user.username)}}"><button class="btn btn-info">Add a
+      Blog</button></a>
+  {% endif %}
+  {% endif %}
 </div>
 {% endblock %}
