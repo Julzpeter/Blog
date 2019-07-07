@@ -1,24 +1,90 @@
 from flask import render_template,request,redirect,url_for,abort
 from . import main
-from .forms import ReviewForm, UpdateProfile,PostForm,PostCommentForm
-from ..models import  User, Post,Comment
+from .forms import  UpdateProfile,PostPitchForm,PostCommentForm
+from ..models import  User, Pitch,Comment
 from flask_login import login_required,current_user
 from .. import db,photos
 import markdown2
 
 
 # Views
-@main.route("/", methods=["GET", "POST"])
+@main.route('/')
 def index():
-    categories = ["FASHION & BEAUTY", "ART",
-                  "CAREER & FINANCE", "MOTHERHOOD", "GAMING", "MUSIC"]
-    return render_template('index.html', categories=categories)
-
+    '''
+    View root page function that returns the index page and its data
+    '''
+    pitches = Pitch.query.order_by(Pitch.date.desc()).all()
+    title = "My Blog -- Home"
+    return render_template('index.html', title=title, pitches=pitches)
 
 @main.route("/blog/<string:category>")
 def posts(category):
     posts = list(Post.query.filter_by(category=category))
     return render_template("/blog.html", posts=posts)
+
+
+@main.route("/post", methods=["GET", "POST"])
+@login_required
+def add():
+    post_form = PostForm()
+    if post_form.validate_on_submit():
+        post = Post(title=post_form.title.data, text=post_form.post.data,
+                    category=post_form.category.data, user_id=current_user.id, username=current_user.username)
+
+        post.save_post()
+        return redirect(url_for("main.index"))
+    return render_template('./post.html', post_form=post_form)
+
+
+@main.route("/delete/<int:id>", methods=["GET", "POST"])
+@login_required
+def delete(id):
+    deleted = Post.query.filter_by(id=id).first()
+    db.session.delete(deleted)
+    db.session.commit()
+    return redirect(url_for('main.index'))
+
+@main.route("/commentDelete/<int:id>",methods=["GET","POST"])
+@login_required
+def delete_comment(id):
+    deleted_comment = Comment.query.filter_by(id=id).first()
+    db.session.delete(deleted_comment)
+    db.session.commit()
+    return redirect (url_for('main.index'))
+  
+
+
+@main.route('/comment/new/<int:post_id>', methods=['GET', 'POST'])
+@login_required
+def new_comment(post_id):
+    form = CommentForm()
+    post = Post.query.filter_by(id=post_id).first()
+
+    if form.validate_on_submit():
+        comment = form.comment.data
+
+        # Updated comment instance
+        new_comment = Comment(text=comment,user_id=current_user.id, post_id=post_id)
+
+        # save review method
+        db.session.add(new_comment)
+        db.session.commit()
+        
+       
+    all_comments = Comment.query.filter_by(post_id=post_id).all()
+    
+    return render_template('comment.html',form=form, comments=all_comments, post=post)
+
+
+
+@main.route('/user/<uname>')
+def profile(uname):
+    user = User.query.filter_by(username=uname).first()
+
+    if user is None:
+        abort(404)
+
+    return render_template("profile/profile.html", user=user)
 
 
 @main.route('/user/<uname>/update', methods=['GET', 'POST'])
@@ -35,8 +101,11 @@ def update_profile(uname):
 
         db.session.add(user)
         db.session.commit()
+
         return redirect(url_for('.profile', uname=user.username))
+
     return render_template('profile/update.html', form=form)
+
 
 @main.route('/user/<uname>/update/pic', methods=['POST'])
 @login_required
@@ -48,52 +117,3 @@ def update_pic(uname):
         user.profile_pic_path = path
         db.session.commit()
     return redirect(url_for('main.profile', uname=uname))
-
-
-@main.route('/pitches/<int:id>', methods=['GET', 'POST'])
-def pitch(id):
-    pitch = Pitch.get_pitch(id)
-    if request.args.get("like"):
-        pitch.likes = pitch.likes + 1
-        db.session.add(pitch)
-        db.session.commit()
-        return redirect("/pitches/{pitch_id}".format(pitches_id=pitch_id))
-
-    elif request.args.get("dislike"):
-        pitch.dislikes = pitch.dislikes + 1
-        db.session.add(pitch)
-        db.session.commit()
-        return redirect("/pitches/{pitch_id}".format(pitches_id=pitch_id))
-
-    comment_form=PostCommentForm()
-    if comment_form.validate_on_submit():
-        comment=comment_form.comment.data
-        new_comment = Comment(pitch_comment=comment,user=current_user,pitch_id=pitch)
-        new_comment.save_comment()
-    comments = Comment.get_comment(pitch)
-    return render_template('pitch.html', pitch=pitch, comment_form=comment_form,comments=comments)
-
-
-        # comment_form = PostCommentForm()
-        # if comment_form.validate_on_submit():
-        #     comment=comment_form.text.data
-        #     new_comment = Comment(comment=comment,user = current_user.pitches_id= pitch)
-        #
-
-
-    # #getting comments for a pitch
-    # all_comments = Comment.query.filter_by(pitch_id=id).all()
-    #
-    # pitch = Post.query.filter_by(id=id).first()
-    # form = PostCommentForm()
-    # #from for comments
-    # if form.validate_on_submit():
-    #     comment = form.comment.data
-    #
-    #     new_comment = Comment(pitch_comment=comment,
-    #                           user=current_user, post_id=id)
-    #     db.session.add(new_comment)
-    #     db.session.commit()
-    #     return redirect(url_for('main.pitch', id=pitch.id))
-    #
-    #
