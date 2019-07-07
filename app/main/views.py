@@ -5,22 +5,42 @@ from ..models import  User, Pitch,Comment
 from flask_login import login_required,current_user
 from .. import db,photos
 import markdown2
+import datetime
 
 
 # Views
-@main.route('/')
+@main.route('/', methods=['GET', 'POST'])
 def index():
     '''
     View root page function that returns the index page and its data
     '''
-    pitches = Pitch.query.order_by(Pitch.date.desc()).all()
-    title = "My Blog -- Home"
-    return render_template('index.html', title=title, pitches=pitches)
+    title = 'Pitch| Home'
+    pitches = Pitch.query.all()
+
+    form = PostPitchForm()
+    if form.validate_on_submit():
+        pitch_category = form.pitch_category.data
+        pitch = form.text.data
+
+        #Updated post
+        new_pitch = Pitch(pitch_category=pitch_category,
+                          text=pitch, user=current_user)
+
+        #save pitch method
+        new_pitch.save_pitch()
+        return redirect(url_for('main.index'))
+
+    return render_template('index.html', title=title, pitch_form=form, pitches=pitches)
 
 @main.route("/blog/<string:category>")
-def posts(category):
-    posts = list(Post.query.filter_by(category=category))
-    return render_template("/blog.html", posts=posts)
+def pitch(category):
+    title = f'My Blog --{category.upper()}'
+    if category == "all":
+        pitches = Pitch.query.order_by(Pitch.time.desc())
+    else:
+        pitches = Pitch.query.filter_by(
+            category=category).order_by(Pitch.time.desc()).all()
+    return render_template("/pitch.html", title=title,pitches = pitches)
 
 
 @main.route("/post", methods=["GET", "POST"])
