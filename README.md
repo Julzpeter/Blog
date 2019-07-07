@@ -1,17 +1,19 @@
-# PITCH
+# BLOG
 
 ## Description
-This is an application that allows a user to submit their one minute pitches and other users will leave comments to give their feedback on them
-## Author
+This is a personal blog website where you can create and share your posts and other users can read them
 
+## Author
 Juliet Koech
 
 
 ## Date made
-29/6/2019
+7/7/2019
 
 ## Features
-* User can register or login if he h/she had not
+* The homepage presents users with all blogs
+* User can login or register if he or she hadnt
+* User can add a blog
 * User can upload a profile pic and image at the profile page
 * User can log out when done
 
@@ -28,6 +30,7 @@ Juliet Koech
 ## Getting Started
 * You require a minimum python version 3.6 to run the application
 * Clone or download the Repo
+* Create a virtual environment
 * Read the specs and requirements files and Install all the requirements.
 * Edit the start.sh file with your api key from the news.org website
 * Run chmod a+x start.py
@@ -44,9 +47,10 @@ Juliet Koech
 
 |Behavior             | Input                  | Output
 |---------------------|------------------------|------------------------|
-|Homepage loads       |Data from index mark up | Displays a button      |
+|Homepage loads       |Data from index mark up | Displays blogs categories     |
 |Homepage loads       | Clicks on  sign in     |  Displays sign in page |
-| New page loads      |  Cicks on sign in      | Displays sign up page  |
+| Blog page loads      |  Cicks add blog     | Adds blogs |
+
 
 ## Technologies used
 * Python
@@ -55,3 +59,6 @@ Juliet Koech
 
 ## Bugs
 If you encounter any bags feel free to email me at chepngetichjuliet@gmail.com
+
+## Support and contact details
+Contact me on chepngetichjuliet@gmail.com for any comments,reviews or advice
