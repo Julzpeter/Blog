@@ -1,7 +1,7 @@
 from flask import render_template,request,redirect,url_for,abort
 from . import main
 from .forms import ReviewForm, UpdateProfile,PostForm,PostCommentForm
-from ..models import  User, Pitch,Comment
+from ..models import  User, Post,Comment
 from flask_login import login_required,current_user
 from .. import db,photos
 import markdown2
@@ -12,22 +12,13 @@ import markdown2
 def index():
     categories = ["FASHION & BEAUTY", "ART",
                   "CAREER & FINANCE", "MOTHERHOOD", "GAMING", "MUSIC"]
-    return render_template('index.html', categories=categories, quotes=random_quote)
+    return render_template('index.html', categories=categories)
 
 
-
-
-@main.route('/user/<uname>')
-def profile(uname):
-    user = User.query.filter_by(username=uname).first()
-
-    if user is None:
-        abort(404)
-
-        posted_pitches = Post.query.filter_by(user_id=current_user.id).all()
-
-
-    return render_template("profile/profile.html", user=user)
+@main.route("/blog/<string:category>")
+def posts(category):
+    posts = list(Post.query.filter_by(category=category))
+    return render_template("/blog.html", posts=posts)
 
 
 @main.route('/user/<uname>/update', methods=['GET', 'POST'])
