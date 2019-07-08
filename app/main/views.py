@@ -84,42 +84,65 @@ def new_pitch(uname):
     return render_template('new_pitch.html', title=title_page, form=form)
 
 
-@main.route("/<uname>/pitch/<pitch_id>/new/comment", methods=["GET", "POST"])
-@login_required
-def new_comment(uname, pitch_id):
-    user = User.query.filter_by(username=uname).first()
-    pitch = Pitch.query.filter_by(id=pitch_id).first()
+# @main.route("/<uname>/pitch/<pitch_id>/new/comment", methods=["GET", "POST"])
+# @login_required
+# def new_comment(uname, pitch_id):
+#     user = User.query.filter_by(username=uname).first()
+#     pitch = Pitch.query.filter_by(id=pitch_id).first()
 
-    form = PostCommentForm()
-    title_page = "My Blog -- Comment Blog"
+#     form = PostCommentForm()
+#     title_page = "My Blog -- Comment Blog"
 
-    if form.validate_on_submit():
-        title = form.title.data
-        comment = form.comment.data
-        date = datetime.datetime.now()
-        time = str(date.time())
-        time = time[0:5]
-        date = str(date)
-        date = date[0:10]
-        new_comment = Comment(pitch_comment=comment, user=user,
-                              pitch_id=pitch)
+#     if form.validate_on_submit():
+#         title = form.title.data
+#         comment = form.comment.data
+#         date = datetime.datetime.now()
+#         time = str(date.time())
+#         time = time[0:5]
+#         date = str(date)
+#         date = date[0:10]
+#         new_comment = Comment(pitch_comment=comment, user=current_user,
+#                               pitch_id=pitch)
 
-        db.session.add(new_comment)
-        db.session.commit()
+#         db.session.add(new_comment)
+#         db.session.commit()
 
-        return redirect(url_for("main.display_comments", pitch_id=pitch.id))
-    return render_template("new_comment.html", title=title_page, form=form, pitch=pitch)
+#         return redirect(url_for("main.new_comment", pitch_id=pitch.id))
+#     return render_template("new_comment.html", title=title_page, form=form, pitch=pitch)
 
 
 @main.route("/<pitch_id>/comments")
-@login_required
-def display_comments(pitch_id):
-    # user = User.query.filter_by(username = current_user).first()
-    pitch = Pitch.query.filter_by(id=pitch_id).first()
-    title = "My Blog -- Comments"
-    # comments= Comment.get_comment(pitch_id)
-    # comments = Comment.query.filter_by(pitch_id=pitch_id).all()
-    return render_template("display_comments.html", pitch=pitch, title=title)
+def pitch(id):
+    pitch = Pitch.get_pitch(id)
+    comment_form = PostCommentForm()
+    if comment_form.validate_on_submit():
+        comment = comment_form.comment.data
+        new_comment = Comment(pitch_comment=comment,
+                              user=current_user, pitch_id=pitch)
+        new_comment.save_comment()
+    comments = Comment.get_comment(pitch)
+    return render_template('pitch.html', pitch=pitch, comment_form=comment_form, comments=comments)
+
+# @login_required
+# def display_comments(pitch_id):
+#     # user = User.query.filter_by(username = current_user).first()
+#     pitch = Pitch.query.filter_by(id=pitch_id).first()
+#     title = "My Blog -- Comments"
+#     # comments= Comment.get_comment(pitch_id)
+#     # comments = Comment.query.filter_by(pitch_id=pitch_id).all()
+#     return render_template("display_comments.html", pitch=pitch, title=title)
+# @main.route('/pitches/<int:id>', methods=['GET', 'POST'])
+# def pitch(id):
+#     pitch = Pitch.get_pitch(id)
+#     comment_form = PostCommentForm()
+#     if comment_form.validate_on_submit():
+#         comment = comment_form.comment.data
+#         new_comment = Comment(pitch_comment=comment,
+#                               user=current_user, pitch_id=pitch)
+#         new_comment.save_comment()
+#     comments = Comment.get_comment(pitch)
+#     return render_template('pitch.html', pitch=pitch, comment_form=comment_form, comments=comments)
+
 
 
 @main.route('/user/<uname>')
