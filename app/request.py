@@ -1,37 +1,41 @@
-from .models import Quote
+# from .models import Quote
 import urllib.request, json
 
 # Getting the quote base url
 base_url = None
 
 
-def configure_request(app):
-    global base_url
-    base_url = app.config['QUOTE_API_BASE_URL']
+# def configure_request(app):
+#     global base_url
+#     base_url = app.config['QUOTE_API_BASE_URL']
 
 
-def get_quote():
-    get_quote_url = base_url
+
+
+def get_quotes():
+    get_quote_url = 'http://quotes.stormconsultancy.co.uk/random.json'
 
     with urllib.request.urlopen(get_quote_url) as url:
-        quote_data = url.read()
-        quote_response = json.loads(quote_data)
+        quotes = url.read()
+        get_quotes_response= json.loads(quotes)
 
-        quote_object = []
-        if quote_response:
+    return get_quotes_response
 
-            quote = quote_response
-            random_quote = process_results(quote)
+#         # quote_object = []
+#         # if quote_response:
 
-    return random_quote
+#         #     quote = quote_response
+#         #     random_quote = process_results(quote)
+
+#     return quote_response
 
 
-def process_results(quote):
+# def process_results(quote_response):
 
-        random_quote = []
-        id = quote['id']
-        author = quote['author']
-        quote = quote['quote']
+#         random_quote = []
+#         id = quote_response['id']
+#         author = quote_response['author']
+#         quote = quote_response['quote']
 
-        random_quote.append(Quote(id, author, quote))
-        return random_quote
+#         random_quote.append(Quote(id, author, quote))
+#         return random_quote

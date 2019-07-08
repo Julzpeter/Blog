@@ -6,6 +6,7 @@ from flask_login import login_required,current_user
 from .. import db,photos
 import markdown2
 import datetime
+from ..request import get_quotes
 
 
 # Views
@@ -14,6 +15,10 @@ def index():
     '''
     View root page function that returns the index page and its data
     '''
+    quotes=get_quotes()
+    # posts = Post.query.all()
+    
+
     title = 'Blog| Home'
     pitches = Pitch.query.all()
 
@@ -30,18 +35,21 @@ def index():
         new_pitch.save_pitch()
         return redirect(url_for('main.index'))
 
-    return render_template('index.html', title=title, pitch_form=form, pitches=pitches)
+    return render_template('index.html', title=title, pitch_form=form, pitches=pitches,quotes=quotes)
 
 @main.route("/pitches/<category>")
 def pitch_category(category):
     title = f'My Blog --{category.upper()}'
-    return render_template("/pitch.html", title=title)
+    print(category)
+    pitches = Pitch.query.filter_by(pitch_category=category).all()
+    return render_template("/pitch.html", title=title, pitches=pitches)
 
 
 @main.route('/<uname>/new/pitch', methods=['GET', 'POST'])
 @login_required
 def new_pitch(uname):
     form = PostPitchForm()
+    print('-'* 30)
 
     user = User.query.filter_by(username=uname).first()
 
@@ -60,6 +68,11 @@ def new_pitch(uname):
                       pitch_category=pitch_category,
                       user=current_user)
         db.session.add(pitch)
+        print(pitch)
+        print(text, pitch_category)
+        # for i in pitch:
+        #     print()
+
         db.session.commit()
                       
 
@@ -88,8 +101,8 @@ def new_comment(uname, pitch_id):
         time = time[0:5]
         date = str(date)
         date = date[0:10]
-        new_comment = Comment(post_comment=comment, user=user,
-                              pitch=pitch, time=time, date=date)
+        new_comment = Comment(pitch_comment=comment, user=user,
+                              pitch_id=pitch)
 
         db.session.add(new_comment)
         db.session.commit()
@@ -104,9 +117,9 @@ def display_comments(pitch_id):
     # user = User.query.filter_by(username = current_user).first()
     pitch = Pitch.query.filter_by(id=pitch_id).first()
     title = "My Blog -- Comments"
-    comments = Comment.get_comments(pitch_id)
-
-    return render_template("display_comments.html", comments=comments, pitch=pitch, title=title)
+    # comments= Comment.get_comment(pitch_id)
+    # comments = Comment.query.filter_by(pitch_id=pitch_id).all()
+    return render_template("display_comments.html", pitch=pitch, title=title)
 
 
 @main.route('/user/<uname>')
