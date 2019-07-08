@@ -64,4 +64,4 @@ If you encounter any bags feel free to email me at chepngetichjuliet@gmail.com
 Contact me on chepngetichjuliet@gmail.com for any comments,reviews or advice
 
 ## MIT LICENSE
-[MIT](/home/juliet/Documents/blog/LICENSE)
+[MIT](https://github.com/Julzpeter/Blog/blob/master/LICENSE)
