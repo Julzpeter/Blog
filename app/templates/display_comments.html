@@ -11,7 +11,7 @@
 <div class="container">
     <div class="row">
         <h3>Comments for <strong>{{pitch.title}}</strong> by <strong>{{pitch.user.username}}</strong></h3>
-        <a href="{{url_for('main.new_comment',uname = current_user.username, pitch_id = pitch.id)}}"><button
+        <a href="{{url_for('main.display_comments',uname = current_user.username, pitch_id = pitch.id)}}"><button
                 class="btn btn-info mr-0">Add a comment</button></a>
 
 
